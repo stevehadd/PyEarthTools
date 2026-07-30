@@ -1,0 +1,159 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >
+  CloudFormation template for the aws-site-archive SageMaker environment.
+  Provisions: S3 output bucket, IAM execution role, SageMaker Notebook Instance.
+
+# =============================================================================
+# Parameters
+# =============================================================================
+Parameters:
+
+  ProjectName:
+    Type: String
+    Default: aws-site-archive
+    Description: Prefix used for all resource names.
+
+  NotebookInstanceType:
+    Type: String
+    Default: ml.t3.medium
+    AllowedValues:
+      - ml.t2.medium
+      - ml.t3.medium
+      - ml.t3.large
+      - ml.m5.xlarge
+      - ml.m5.2xlarge
+    Description: SageMaker Notebook Instance type.
+
+  CreateNotebook:
+    Type: String
+    Default: 'false'
+    AllowedValues: ['true', 'false']
+    Description: Set to 'true' to provision a SageMaker Notebook Instance.
+
+# =============================================================================
+# Conditions
+# =============================================================================
+Conditions:
+  ShouldCreateNotebook: !Equals [!Ref CreateNotebook, 'true']
+
+# =============================================================================
+# Resources
+# =============================================================================
+Resources:
+
+  # ---------------------------------------------------------------------------
+  # S3 output bucket
+  # ---------------------------------------------------------------------------
+  OutputBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub '${ProjectName}-output-${AWS::AccountId}'
+      VersioningConfiguration:
+        Status: Enabled
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        IgnorePublicAcls: true
+        BlockPublicPolicy: true
+        RestrictPublicBuckets: true
+      Tags:
+        - Key: Project
+          Value: !Ref ProjectName
+
+  # ---------------------------------------------------------------------------
+  # IAM execution role
+  # ---------------------------------------------------------------------------
+  SageMakerExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub '${ProjectName}-sagemaker-role'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: sagemaker.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonSageMakerFullAccess
+        - arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess
+      Policies:
+        - PolicyName: WriteOutputBucket
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:PutObject
+                  - s3:PutObjectAcl
+                  - s3:DeleteObject
+                Resource: !Sub 'arn:aws:s3:::${OutputBucket}/*'
+        - PolicyName: ECRReadAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ecr:GetDownloadUrlForLayer
+                  - ecr:BatchGetImage
+                  - ecr:BatchCheckLayerAvailability
+                  - ecr:GetAuthorizationToken
+                Resource: '*'
+      Tags:
+        - Key: Project
+          Value: !Ref ProjectName
+
+  # ---------------------------------------------------------------------------
+  # ECR repository for custom Docker image
+  # ---------------------------------------------------------------------------
+  ECRRepository:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: !Sub '${ProjectName}'
+      ImageScanningConfiguration:
+        ScanOnPush: true
+      Tags:
+        - Key: Project
+          Value: !Ref ProjectName
+
+  # ---------------------------------------------------------------------------
+  # SageMaker Notebook Instance (optional)
+  # ---------------------------------------------------------------------------
+  NotebookInstance:
+    Type: AWS::SageMaker::NotebookInstance
+    Condition: ShouldCreateNotebook
+    Properties:
+      NotebookInstanceName: !Sub '${ProjectName}-notebook'
+      InstanceType: !Ref NotebookInstanceType
+      RoleArn: !GetAtt SageMakerExecutionRole.Arn
+      Tags:
+        - Key: Project
+          Value: !Ref ProjectName
+
+# =============================================================================
+# Outputs
+# =============================================================================
+Outputs:
+
+  OutputBucketName:
+    Description: S3 bucket for job outputs
+    Value: !Ref OutputBucket
+    Export:
+      Name: !Sub '${ProjectName}-output-bucket'
+
+  SageMakerRoleArn:
+    Description: IAM execution role ARN for SageMaker jobs
+    Value: !GetAtt SageMakerExecutionRole.Arn
+    Export:
+      Name: !Sub '${ProjectName}-sagemaker-role-arn'
+
+  ECRRepositoryUri:
+    Description: ECR repository URI for the custom Docker image
+    Value: !Sub '${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${ECRRepository}'
+    Export:
+      Name: !Sub '${ProjectName}-ecr-uri'
+
+  NotebookInstanceUrl:
+    Condition: ShouldCreateNotebook
+    Description: SageMaker Notebook Instance URL
+    Value: !Sub 'https://${NotebookInstance}.notebook.${AWS::Region}.sagemaker.aws/'
+
