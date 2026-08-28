@@ -17,13 +17,17 @@ Each dataset section provides:
 # Met Office Global 10 km Deterministic
 # ---------------------------------------------------------------------------
 
+# Variables are CF convention standard names:
+# https://cfconventions.org/Data/cf-standard-names/current/build/cf-standard-name-table.html
+# variables names in orgininal data is taken from Met Office documentation
+# https://www.metoffice.gov.uk/api/assets/file/global-10km-ps47-asdi-pdf-updates-20pdf?prefix=assets
 MOGLOBAL_10KM_VARIABLES = {
     # Surface / single-level fields
-    "2t": "air_temperature",                     # 2-metre temperature [K]
-    "10u": "x_wind",                              # 10-metre U wind [m/s]
-    "10v": "y_wind",                              # 10-metre V wind [m/s]
-    "msl": "air_pressure_at_sea_level",           # Mean sea-level pressure [Pa]
-    "lsm": "land_binary_mask",                    # Land-sea mask [0/1]
+    "air_temperature": "temperature_on_pressure_levels",                     # 2-metre temperature [K]
+    "x_wind": "",                              # 10-metre U wind [m/s]
+    "y_wind": "y_wind",                              # 10-metre V wind [m/s]
+    "air_pressure_at_mean_sea_level": "pressure_at_mean_sea_level",           # Mean sea-level pressure [Pa]
+    "wind_speed": "wind_speed_at_10m"
     "tp": "stratiform_rainfall_amount",            # Total precipitation [kg/m²]
     "tcc": "cloud_area_fraction",                 # Total cloud cover [1]
     "vis": "visibility_in_air",                   # Visibility [m]
