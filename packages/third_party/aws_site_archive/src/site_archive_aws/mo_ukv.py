@@ -1,3 +1,17 @@
+# Copyright Commonwealth of Australia, Bureau of Meteorology 2026.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 import pathlib
 
 import xarray
@@ -13,6 +27,7 @@ from pyearthtools.data.archive import register_archive
 @register_archive("MOUKV", sample_kwargs=dict(variable="temperature_on_pressure_levels"))
 class MOUKV(ArchiveIndex):
     """
+    Data Accessor for accessing Met Office data through the AWS Sustainable Data initiative.
     """
     MO_UKV_AWS_ROOT_PATH = 's3://met-office-atmospheric-model-data/uk-deterministic-2km/'
     MO_UKV_AWS_DIR_TEMPLATE = MO_UKV_AWS_ROOT_PATH + '{vt_str}'
