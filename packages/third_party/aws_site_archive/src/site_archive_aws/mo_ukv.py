@@ -66,6 +66,9 @@ class MOUKV(ArchiveIndex):
             querytime: str | Petdt,
     ) -> pathlib.Path | dict[str, str | pathlib.Path]:
 
+        if not self._variables:
+            raise pyearthtools.data.DataNotFoundError('No variables specified to load.')
+            
         querytime = Petdt(querytime)
         paths = []
 
@@ -81,7 +84,6 @@ class MOUKV(ArchiveIndex):
                 paths += [current_path]
             except KeyError:
                 print(f'No data for var {var_name}')
-
         print(paths)
         return paths
 
