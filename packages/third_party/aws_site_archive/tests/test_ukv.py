@@ -9,41 +9,46 @@ import pyearthtools.data
 from pyearthtools.data import Petdt
 
 VAR_LIST = [
-    'temperature_on_pressure_levels',
-    'relative_humidity_on_pressure_levels',
-    'wind_speed_on_pressure_levels',
-    'wind_direction_on_pressure_levels',
+    "temperature_on_pressure_levels",
+    "relative_humidity_on_pressure_levels",
+    "wind_speed_on_pressure_levels",
+    "wind_direction_on_pressure_levels",
 ]
+
 
 def _setup_index(var_list):
     ukv_accessor = pyearthtools.data.archive.MOUKV(var_list)
     return ukv_accessor
 
+
 def _get_random_time():
     current_dt = datetime.datetime.now()
-    previous_midnight = datetime.datetime(current_dt.year,
-                                          current_dt.month,
-                                          current_dt.day,
-                                          0,
-                                          0,
-                                         )
+    previous_midnight = datetime.datetime(
+        current_dt.year,
+        current_dt.month,
+        current_dt.day,
+        0,
+        0,
+    )
     # select a date within the coverage of data, which is the past 2 years
-    select_dt = previous_midnight - datetime.timedelta(hours=6*random.randrange(2800))
+    select_dt = previous_midnight - datetime.timedelta(hours=6 * random.randrange(2800))
     return select_dt
-    
+
+
 def test_ukv_filepaths():
     """
     Test the filpaths functions.
     """
     var_list = VAR_LIST
     ukv_accessor = _setup_index(var_list)
-    
-    select_dt = Petdt( _get_random_time())
-    
+
+    select_dt = Petdt(_get_random_time())
+
     file_list = ukv_accessor.filesystem(select_dt)
-    
-    assert(len(var_list) == len(file_list))
-    assert(all([v1 in str(f1) for v1,f1 in zip(var_list,file_list)]))
+
+    assert len(var_list) == len(file_list)
+    assert all([v1 in str(f1) for v1, f1 in zip(var_list, file_list)])
+
 
 @pytest.mark.slow
 def test_ukv_load():
@@ -53,10 +58,11 @@ def test_ukv_load():
     ukv_index = _setup_index(VAR_LIST)
     select_dt = _get_random_time()
     ukv_ds = ukv_index[select_dt]
-    
+
     # check the size of the data loaded
-    assert(ukv_ds['air_temperature'].shape == (1,33,970,1042))
-    
+    assert ukv_ds["air_temperature"].shape == (1, 33, 970, 1042)
+
+
 @pytest.mark.xfail(raises=pyearthtools.data.DataNotFoundError)
 def test_ukv_novar():
     """
@@ -64,7 +70,7 @@ def test_ukv_novar():
     """
     ukv_index = _setup_index([])
     ukv_ds = ukv_index[_get_random_time()]
-    
+
 
 @pytest.mark.noci
 @pytest.mark.xfail(raises=pyearthtools.data.DataNotFoundError)
@@ -74,7 +80,7 @@ def test_ukv_invalid_time():
     """
     ukv_index = _setup_index(VAR_LIST)
     ukv_index[_get_random_time() + datetime.timedelta(seconds=600)]
-    
+
 
 @pytest.mark.noci
 @pytest.mark.xfail(raises=pyearthtools.data.DataNotFoundError)
@@ -82,6 +88,5 @@ def test_ukv_invalid_var():
     """
     Test that retrieval fails if an invalid variable name is given.
     """
-    ukv_index = _setup_index(['nonsense_name'])
+    ukv_index = _setup_index(["nonsense_name"])
     ukv_index[_get_random_time()]
-    

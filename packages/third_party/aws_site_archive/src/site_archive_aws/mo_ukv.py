@@ -24,20 +24,22 @@ from pyearthtools.data.indexes import ArchiveIndex
 from pyearthtools.data.transforms import Transform, TransformCollection
 from pyearthtools.data.archive import register_archive
 
+
 @register_archive("MOUKV", sample_kwargs=dict(variable="temperature_on_pressure_levels"))
 class MOUKV(ArchiveIndex):
     """
     Data Accessor for accessing Met Office data through the AWS Sustainable Data initiative.
     """
-    MO_UKV_AWS_ROOT_PATH = 's3://met-office-atmospheric-model-data/uk-deterministic-2km/'
-    MO_UKV_AWS_DIR_TEMPLATE = MO_UKV_AWS_ROOT_PATH + '{vt_str}'
-    MO_UKV_FNAME_TEMPLATE = '{vt_str}-PT0000H00M-{var_name}.nc'
+
+    MO_UKV_AWS_ROOT_PATH = "s3://met-office-atmospheric-model-data/uk-deterministic-2km/"
+    MO_UKV_AWS_DIR_TEMPLATE = MO_UKV_AWS_ROOT_PATH + "{vt_str}"
+    MO_UKV_FNAME_TEMPLATE = "{vt_str}-PT0000H00M-{var_name}.nc"
 
     def __init__(
-            self,
-            variables: list[str] | str,
-            *,
-            transforms: Transform | TransformCollection | None = None,
+        self,
+        variables: list[str] | str,
+        *,
+        transforms: Transform | TransformCollection | None = None,
     ):
         """
         Init function for Merra2 accessor base class.
@@ -45,15 +47,18 @@ class MOUKV(ArchiveIndex):
         self._variables = variables
 
         self._open_args = {
-            'engine':"h5netcdf", #
-            'storage_options': {"anon": True},
+            "engine": "h5netcdf",  #
+            "storage_options": {"anon": True},
         }
-        self._mf_args = {
-            'concat_dim' : 'time',
-            'combine' :'nested'
-        }
-        super_transforms = TransformCollection(
-            [pyearthtools.data.transforms.variables.Trim(self._variables), ]) + transforms
+        self._mf_args = {"concat_dim": "time", "combine": "nested"}
+        super_transforms = (
+            TransformCollection(
+                [
+                    pyearthtools.data.transforms.variables.Trim(self._variables),
+                ]
+            )
+            + transforms
+        )
 
         # call the base class
         super().__init__(
@@ -62,28 +67,29 @@ class MOUKV(ArchiveIndex):
         self.record_initialisation()
 
     def filesystem(
-            self,
-            querytime: str | Petdt,
+        self,
+        querytime: str | Petdt,
     ) -> pathlib.Path | dict[str, str | pathlib.Path]:
 
         if not self._variables:
-            raise pyearthtools.data.DataNotFoundError('No variables specified to load.')
-            
+            raise pyearthtools.data.DataNotFoundError("No variables specified to load.")
+
         querytime = Petdt(querytime)
         paths = []
 
-        vt_template= '{dt.year:04d}{dt.month:02d}{dt.day:02d}T{dt.hour:02d}{dt.minute:02d}Z'
-        _fname_template = '{vt_str}-PT0000H00M-{var_name}.nc'
-        
+        vt_template = "{dt.year:04d}{dt.month:02d}{dt.day:02d}T{dt.hour:02d}{dt.minute:02d}Z"
+        _fname_template = "{vt_str}-PT0000H00M-{var_name}.nc"
+
         for var_name in self._variables:
             try:
-                current_fname = MOUKV.MO_UKV_FNAME_TEMPLATE.format(vt_str=vt_template.format(dt=querytime),
-                                                                    var_name=var_name)
+                current_fname = MOUKV.MO_UKV_FNAME_TEMPLATE.format(
+                    vt_str=vt_template.format(dt=querytime), var_name=var_name
+                )
                 current_dir = MOUKV.MO_UKV_AWS_DIR_TEMPLATE.format(vt_str=vt_template.format(dt=querytime))
-                current_path = f'{current_dir}/{current_fname}'
+                current_path = f"{current_dir}/{current_fname}"
                 paths += [current_path]
             except KeyError:
-                print(f'No data for var {var_name}')
+                print(f"No data for var {var_name}")
         print(paths)
         return paths
 
@@ -97,4 +103,3 @@ class MOUKV(ArchiveIndex):
             "range": "June 2026",
             "Documentation": "https://registry.opendata.aws/met-office-uk-deterministic/",
         }
-
