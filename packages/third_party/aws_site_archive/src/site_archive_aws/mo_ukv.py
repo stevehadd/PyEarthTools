@@ -31,8 +31,7 @@ class MOUKV(ArchiveIndex):
     Data Accessor for accessing Met Office data through the AWS Sustainable Data initiative.
     """
 
-    MO_UKV_AWS_ROOT_PATH = "s3://met-office-atmospheric-model-data/uk-deterministic-2km/"
-    MO_UKV_AWS_DIR_TEMPLATE = MO_UKV_AWS_ROOT_PATH + "{vt_str}"
+    MO_UKV_AWS_DIR_TEMPLATE =  "{root_dir}/{vt_str}"
     MO_UKV_FNAME_TEMPLATE = "{vt_str}-PT0000H00M-{var_name}.nc"
 
     def __init__(
@@ -77,15 +76,18 @@ class MOUKV(ArchiveIndex):
         querytime = Petdt(querytime)
         paths = []
 
+        
         vt_template = "{dt.year:04d}{dt.month:02d}{dt.day:02d}T{dt.hour:02d}{dt.minute:02d}Z"
-        _fname_template = "{vt_str}-PT0000H00M-{var_name}.nc"
-
+        root_dir = self.ROOT_DIRECTORIES["MOUKV_AWS"]
         for var_name in self._variables:
             try:
                 current_fname = MOUKV.MO_UKV_FNAME_TEMPLATE.format(
                     vt_str=vt_template.format(dt=querytime), var_name=var_name
                 )
-                current_dir = MOUKV.MO_UKV_AWS_DIR_TEMPLATE.format(vt_str=vt_template.format(dt=querytime))
+                current_dir = MOUKV.MO_UKV_AWS_DIR_TEMPLATE.format(
+                    root_dir=root_dir,
+                    vt_str=vt_template.format(dt=querytime)
+                )
                 current_path = f"{current_dir}/{current_fname}"
                 paths += [current_path]
             except KeyError:
@@ -97,7 +99,7 @@ class MOUKV(ArchiveIndex):
         ds = xarray.merge([xarray.open_dataset(path1, **self._open_args) for path1 in args[0]])
         return ds
 
-    def __desc__(self):
+    def _desc_(self):
         return {
             "singleline": "Met Office UKV Forecast Analysis ",
             "range": "June 2026",

@@ -26,8 +26,8 @@ from pyearthtools.data.archive import (
 # ---------------------------------------------------------------------------
 
 ROOT_DIRECTORIES = {
-    "MOGlobal10km": "s3://met-office-atmospheric-model-data/global-deterministic/",
-    "MOUKV_AWS": "s3://met-office-atmospheric-model-data/uk-deterministic/",
+    "MOGlobal10km_AWS": "s3://met-office-atmospheric-model-data/global-deterministic-10km",
+    "MOUKV_AWS": "s3://met-office-atmospheric-model-data/uk-deterministic-2km",
 }
 
 register_archive("ROOT_DIRECTORIES")(ROOT_DIRECTORIES)
