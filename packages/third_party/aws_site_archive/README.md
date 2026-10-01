@@ -8,6 +8,7 @@ The indices provided through the site archive load the data directly from AWS S3
 The following is a python snippet that demonstrates how to access Met Office UKV data on AWS through the site archive.
 
 ```
+import datetime
 import site_archive_aws
 import pyearthtools.data.archive
 
