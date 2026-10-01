@@ -25,7 +25,7 @@ from pyearthtools.data.transforms import Transform, TransformCollection
 from pyearthtools.data.archive import register_archive
 
 
-@register_archive("MOUKV", sample_kwargs=dict(variable="temperature_on_pressure_levels"))
+@register_archive("MOUKV", sample_kwargs=dict(variables="temperature_on_pressure_levels"))
 class MOUKV(ArchiveIndex):
     """
     Data Accessor for accessing Met Office data through the AWS Sustainable Data initiative.

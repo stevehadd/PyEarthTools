@@ -4,7 +4,7 @@ requires = ["setuptools>=61", "setuptools-scm>=8.0"]
 [project]
 name = "PyEarthTools-archive-AWS"
 description = "PyEarthTools archive for Met Office and partner datasets available via the AWS Sustainable Data Initiative (ASDI)"
-requires-python = ">=3.10, <3.14"
+requires-python = ">=3.11, <3.14"
 license = {file = "LICENSE"}
 keywords = ["pyearthtools", "aws", "met-office", "nwp", "weather"]
 maintainers = [
