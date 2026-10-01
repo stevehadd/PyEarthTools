@@ -31,7 +31,7 @@ class MOGlobal10km(ArchiveIndex):
     Data Accessor for accessing Met Office data through the AWS Sustainable Data initiative.
     """
 
-    MO_GLOBAL_AWS_DIR_TEMPLATE =  "{root_dir}/{vt_str}"
+    MO_GLOBAL_AWS_DIR_TEMPLATE = "{root_dir}/{vt_str}"
     MO_GLOBAL_FNAME_TEMPLATE = "{vt_str}-PT0000H00M-{var_name}.nc"
 
     def __init__(
@@ -82,8 +82,7 @@ class MOGlobal10km(ArchiveIndex):
                     vt_str=vt_template.format(dt=querytime), var_name=var_name
                 )
                 current_dir = MOGlobal10km.MO_GLOBAL_AWS_DIR_TEMPLATE.format(
-                    root_dir=root_dir,
-                    vt_str=vt_template.format(dt=querytime)
+                    root_dir=root_dir, vt_str=vt_template.format(dt=querytime)
                 )
                 current_path = f"{current_dir}/{current_fname}"
                 paths += [current_path]

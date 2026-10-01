@@ -31,7 +31,7 @@ class MOUKV(ArchiveIndex):
     Data Accessor for accessing Met Office data through the AWS Sustainable Data initiative.
     """
 
-    MO_UKV_AWS_DIR_TEMPLATE =  "{root_dir}/{vt_str}"
+    MO_UKV_AWS_DIR_TEMPLATE = "{root_dir}/{vt_str}"
     MO_UKV_FNAME_TEMPLATE = "{vt_str}-PT0000H00M-{var_name}.nc"
 
     def __init__(
@@ -76,7 +76,6 @@ class MOUKV(ArchiveIndex):
         querytime = Petdt(querytime)
         paths = []
 
-        
         vt_template = "{dt.year:04d}{dt.month:02d}{dt.day:02d}T{dt.hour:02d}{dt.minute:02d}Z"
         root_dir = self.ROOT_DIRECTORIES["MOUKV_AWS"]
         for var_name in self._variables:
@@ -85,8 +84,7 @@ class MOUKV(ArchiveIndex):
                     vt_str=vt_template.format(dt=querytime), var_name=var_name
                 )
                 current_dir = MOUKV.MO_UKV_AWS_DIR_TEMPLATE.format(
-                    root_dir=root_dir,
-                    vt_str=vt_template.format(dt=querytime)
+                    root_dir=root_dir, vt_str=vt_template.format(dt=querytime)
                 )
                 current_path = f"{current_dir}/{current_fname}"
                 paths += [current_path]
