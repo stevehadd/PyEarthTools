@@ -19,12 +19,6 @@ from pyearthtools.data.archive import (
     load_root_directories_from_config,
 )
 
-# ---------------------------------------------------------------------------
-# Default S3 root directory mapping.
-# These defaults point at the public Met Office ASDI buckets.
-# Override in ~/.pyearthtoolsconfig under [aws].
-# ---------------------------------------------------------------------------
-
 ROOT_DIRECTORIES = {
     "MOGlobal10km_AWS": "s3://met-office-atmospheric-model-data/global-deterministic-10km",
     "MOUKV_AWS": "s3://met-office-atmospheric-model-data/uk-deterministic-2km",

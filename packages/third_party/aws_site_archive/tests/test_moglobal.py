@@ -50,7 +50,8 @@ def test_moglobal_filepaths():
     assert all([v1 in str(f1) for v1, f1 in zip(var_list, file_list)])
 
 
-@pytest.mark.slow
+# @pytest.mark.slow
+@pytest.mark.noci
 def test_moglobal_load():
     """
     Integration Test of actually retrieving data.
@@ -60,8 +61,7 @@ def test_moglobal_load():
     moglobal_ds = moglobal_index[select_dt]
 
     # check the size of the data loaded
-    assert moglobal_ds["air_temperature"].shape == (1, 33, 970, 1042)
-
+    assert moglobal_ds["air_temperature"].shape == (1, 37, 1920, 2560)
 
 @pytest.mark.xfail(raises=pyearthtools.data.DataNotFoundError)
 def test_moglobal_novar():

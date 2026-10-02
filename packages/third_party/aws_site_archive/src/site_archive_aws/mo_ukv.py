@@ -25,10 +25,10 @@ from pyearthtools.data.transforms import Transform, TransformCollection
 from pyearthtools.data.archive import register_archive
 
 
-@register_archive("MOUKV", sample_kwargs=dict(variables="temperature_on_pressure_levels"))
+@register_archive("MOUKV", sample_kwargs=dict(variables=["temperature_on_pressure_levels"]))
 class MOUKV(ArchiveIndex):
     """
-    Data Accessor for accessing Met Office data through the AWS Sustainable Data initiative.
+    Data Accessor for accessing Met Office UKV model data through the AWS Sustainable Data initiative.
     """
 
     MO_UKV_AWS_DIR_TEMPLATE = "{root_dir}/{vt_str}"
@@ -36,12 +36,12 @@ class MOUKV(ArchiveIndex):
 
     def __init__(
         self,
-        variables: list[str] | str,
+        variables: list[str],
         *,
         transforms: Transform | TransformCollection | None = None,
     ):
         """
-        Init function for Merra2 accessor base class.
+        Init function for Met Office UKV model data accessor.
         """
         self._variables = variables
 

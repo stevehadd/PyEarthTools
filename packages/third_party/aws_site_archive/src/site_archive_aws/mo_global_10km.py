@@ -25,7 +25,7 @@ from pyearthtools.data.transforms import Transform, TransformCollection
 from pyearthtools.data.archive import register_archive
 
 
-@register_archive("MOGlobal10km", sample_kwargs=dict(variables="temperature_on_pressure_levels"))
+@register_archive("MOGlobal10km", sample_kwargs=dict(variables=["temperature_on_pressure_levels"]))
 class MOGlobal10km(ArchiveIndex):
     """
     Data Accessor for accessing Met Office data through the AWS Sustainable Data initiative.
@@ -36,12 +36,12 @@ class MOGlobal10km(ArchiveIndex):
 
     def __init__(
         self,
-        variables: list[str] | str,
+        variables: list[str],
         *,
         transforms: Transform | TransformCollection | None = None,
     ):
         """
-        Init function for Merra2 accessor base class.
+        Init function for Met Office Global 10km model accessor class.
         """
         self._variables = variables
         self._open_args = {
