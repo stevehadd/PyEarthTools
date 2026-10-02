@@ -102,5 +102,5 @@ class MOGlobal10km(ArchiveIndex):
         return {
             "singleline": "Met Office 10km Global Determinsitic Forecast Analysis ",
             "range": "June 2026",
-            "Documentation": "https://registry.opendata.aws/met-office-uk-deterministic/",
+            "Documentation": "https://registry.opendata.aws/met-office-global-deterministic/",
         }
